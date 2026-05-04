@@ -1,0 +1,22 @@
+{
+    "experiment_name": "gpuforge-job-completion",
+    "models": [
+        {
+            "name": "Ridge",
+            "mae": 2.66,
+            "rmse": 3.0356,
+            "r2": 0.9804,
+            "mape": 0.0825
+        },
+        {
+            "name": "GradientBoosting",
+            "mae": 2.4221,
+            "rmse": 2.7386,
+            "r2": 0.984,
+            "mape": 0.0693
+        }
+    ],
+    "best_model": "GradientBoosting",
+    "best_metric_name": "rmse",
+    "best_metric_value": 2.7386
+}

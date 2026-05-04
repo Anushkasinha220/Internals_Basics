@@ -1,0 +1,17 @@
+{
+    "health_endpoint": "/status",
+    "predict_endpoint": "/estimate",
+    "port": 8500,
+    "health_response": {
+        "status": "running",
+        "model": "best_model",
+        "version": "1.0"
+    },
+    "test_input": {
+        "gpu_memory_gb": 40,
+        "batch_size": 64,
+        "model_params_millions": 1500,
+        "queue_depth": 8
+    },
+    "prediction": 53.4622
+}
