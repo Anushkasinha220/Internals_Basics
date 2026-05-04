@@ -1,0 +1,7 @@
+{
+    "registered_model_name": "solaredge-power-output-kwh-predictor",
+    "version": 1,
+    "run_id": "948ccc8a08794c2da7e7831fff9f2fd4",
+    "source_metric": "rmse",
+    "source_metric_value": 23.949730520627984
+}

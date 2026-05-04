@@ -1,0 +1,18 @@
+{
+    "experiment_name": "solaredge-power-output-kwh",
+    "models": [
+        {
+            "name": "SVR",
+            "mae": 56.8335,
+            "rmse": 59.3762
+        },
+        {
+            "name": "Gradient Boosting",
+            "mae": 17.1093,
+            "rmse": 23.9497
+        }
+    ],
+    "best_model": "Gradient Boosting",
+    "best_metric_name": "rmse",
+    "best_metric_value": 23.9497
+}

@@ -4,82 +4,77 @@ import mlflow
 import mlflow.sklearn
 import json
 import os
-import joblib
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import Ridge
+from sklearn.svm import SVR
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_absolute_percentage_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-def train_baseline_comparison():
+def train():
     # 1. Load Data
     df = pd.read_csv("data/training_data.csv")
-    X = df.drop(columns=['job_completion_min'])
-    y = df['job_completion_min']
+    X = df.drop(columns=['power_output_kwh'])
+    y = df['power_output_kwh']
     
-    # 2. Split Data (using required random_state=42 and test_size=0.2)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # 2. Train/Test Split (Required parameters)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
     
     # 3. Setup MLflow Experiment
-    mlflow.set_experiment("gpuforge-job-completion")
-    
+    mlflow.set_experiment("solaredge-power-output-kwh")
     model_results = []
     
-    # Define models to compare[cite: 1]
+    # Models to compare
     candidates = [
-        ("Ridge", Ridge()),
-        ("GradientBoosting", GradientBoostingRegressor(random_state=42))
+        ("SVR", SVR()), 
+        ("Gradient Boosting", GradientBoostingRegressor(random_state=42))
     ]
     
     for name, model_obj in candidates:
         with mlflow.start_run(run_name=name):
-            # Train
+            # Train the model
             model_obj.fit(X_train, y_train)
             preds = model_obj.predict(X_test)
             
-            # Compute required metrics[cite: 1]
+            # Calculate metrics[cite: 2]
             mae = mean_absolute_error(y_test, preds)
             rmse = np.sqrt(mean_squared_error(y_test, preds))
-            r2 = r2_score(y_test, preds)
-            mape = mean_absolute_percentage_error(y_test, preds)
             
-            # Log to MLflow[cite: 1]
+            # --- CRITICAL UPDATES FOR TASK 2 ---
+            # Log metrics and hyperparameters[cite: 2]
             mlflow.log_params(model_obj.get_params())
-            mlflow.log_metrics({"mae": mae, "rmse": rmse, "r2": r2, "mape": mape})
-            mlflow.set_tag("experiment_type", "baseline_comparison")
+            mlflow.log_metrics({"mae": mae, "rmse": rmse})
             
-            # Save for JSON output
+            # Log the actual model files so Task 2 can find them[cite: 2]
+            mlflow.sklearn.log_model(model_obj, "model")
+            
+            # Set the required domain tag[cite: 2]
+            mlflow.set_tag("domain", "solar_energy")
+            # -----------------------------------
+            
             model_results.append({
-                "name": name,
-                "mae": round(float(mae), 4),
-                "rmse": round(float(rmse), 4),
-                "r2": round(float(r2), 4),
-                "mape": round(float(mape), 4)
+                "name": name, 
+                "mae": round(mae, 4), 
+                "rmse": round(rmse, 4)
             })
-            
-            # Save model artifact locally
-            os.makedirs("models", exist_ok=True)
-            joblib.dump(model_obj, f"models/{name}.pkl")
 
-    # 4. Select Best Model by RMSE[cite: 1]
+    # 4. Determine best model by RMSE[cite: 2]
     best_model_data = min(model_results, key=lambda x: x['rmse'])
     
-    # 5. Save results/step1_tracking.json[cite: 1]
-    os.makedirs("results", exist_ok=True)
-    step1_output = {
-        "experiment_name": "gpuforge-job-completion",
+    # 5. Generate results/step1_s1.json[cite: 2]
+    output = {
+        "experiment_name": "solaredge-power-output-kwh",
         "models": model_results,
         "best_model": best_model_data["name"],
         "best_metric_name": "rmse",
         "best_metric_value": best_model_data["rmse"]
     }
     
-    with open("results/step1_tracking.json", "w") as f:
-        json.dump(step1_output, f, indent=4)
+    os.makedirs("results", exist_ok=True)
+    with open("results/step1_s1.json", "w") as f:
+        json.dump(output, f, indent=4)
     
-    # Save the winner as 'best_model.pkl' for Task 2[cite: 1]
-    joblib.dump(joblib.load(f"models/{best_model_data['name']}.pkl"), "models/best_model.pkl")
-    
-    print(f"Task 1 Complete. Best Model: {best_model_data['name']} (RMSE: {best_model_data['rmse']})")
+    print(f"Task 1 Complete. Best model: {best_model_data['name']} (RMSE: {best_model_data['rmse']})")
 
 if __name__ == "__main__":
-    train_baseline_comparison()
+    train()

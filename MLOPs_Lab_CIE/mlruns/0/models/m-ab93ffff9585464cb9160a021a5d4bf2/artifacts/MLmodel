@@ -1,0 +1,23 @@
+artifact_path: file:C:/Users/Anush/AppData/Roaming/SPB_Data/Internals_Basics/MLOPs_Lab_CIE/mlruns/0/models/m-ab93ffff9585464cb9160a021a5d4bf2/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.6.1
+    skops_trusted_types: null
+mlflow_version: 3.11.1
+model_id: m-ab93ffff9585464cb9160a021a5d4bf2
+model_size_bytes: 133225
+model_uuid: m-ab93ffff9585464cb9160a021a5d4bf2
+prompts: null
+run_id: b68191650c8a4129b12b959efc824ec7
+utc_time_created: '2026-05-04 04:03:40.085076'
